@@ -1,36 +1,80 @@
-$("#submit").on("click", function() {
-  var request = $("#giphy").val().trim();
+var giphies = ["unicorns", "fairies", "rainbows", "kittens", "falkor"];
+
+
+
+function getGiphy() {
+
+  var giphy = $(this).attr("data-name");
+
   var queryURL = "https://api.giphy.com/v1/gifs/search?q=" +
-    request + "&api_key=dc6zaTOxFJmzC&limit=10";
+    giphy + "&api_key=dc6zaTOxFJmzC&limit=10";
   console.log(queryURL);
-
-  var createButton = $('<button></button>').attr("value", request);
-  console.log(createButton);
-
-  $("#buttons-go-here").append(createButton);
-
 
   $.ajax({
       url: queryURL,
       method: "GET"
     })
     .done(function(response) {
+      var giphyDiv = $("<div class='gifs'>");
       var results = response.data;
       console.log(results);
-      for (var i = 0; i < results.length; i++) {
-        var gifDiv = $("<div class='item'>");
 
-        var rating = results[i].rating;
+      var rating = response.data[0].rating;
 
-        var p = $("<p>").text("Rating: " + rating);
+      var p = $("<p>").text("Rating: " + rating);
 
-        var giphyImage = $("<img>");
-        giphyImage.attr("src", results[i].images.fixed_height.url);
+      giphyDiv.append(p);
+      var giphyImage = $("<img>");
+      giphyImage.attr("src", response.data[0].images.fixed_height.url);
+      giphyDiv.append(giphyImage);
 
-        gifDiv.prepend(p);
-        gifDiv.prepend(giphyImage);
+      $("#gifs-appear-here").append(giphyDiv);
 
-        $("#gifs-appear-here").prepend(gifDiv);
-      }
+
     });
+}
+
+
+function renderButtons() {
+
+  $("#buttons-go-here").empty();
+
+  for (var i = 0; i < giphies.length; i++){
+    var button = $("<button>");
+    button.addClass("gifs");
+    button.attr("data-name", giphies[i]);
+    button.text(giphies[i]);
+    $("#buttons-go-here").append(button);
+  }
+}
+
+$("#submit").on("click", function(event) {
+  event.preventDefault();
+
+  var newGif = $("#giphy").val().trim();
+
+  giphies.push(newGif);
+  renderButtons();
 });
+
+$(document).on("click", ".gifs", getGiphy);
+
+renderButtons();
+
+
+// var results = response.data;
+// console.log(results);
+// for (var i = 0; i < results.length; i++) {
+//   var gifDiv = $("<div class='item'>");
+//
+//   var rating = results[i].rating;
+//
+//   var p = $("<p>").text("Rating: " + rating);
+//
+//   var giphyImage = $("<img>");
+//   giphyImage.attr("src", results[i].images.fixed_height.url);
+//
+//   gifDiv.prepend(p);
+//   gifDiv.prepend(giphyImage);
+//
+//   $("#gifs-appear-here").prepend(gifDiv);
