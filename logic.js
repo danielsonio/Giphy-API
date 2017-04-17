@@ -1,10 +1,10 @@
 $("#submit").on("click", function() {
   var request = $("#giphy").val().trim();
-  var queryURL = "http://api.giphy.com/v1/gifs/search?q=" +
+  var queryURL = "https://api.giphy.com/v1/gifs/search?q=" +
     request + "&api_key=dc6zaTOxFJmzC&limit=10";
   console.log(queryURL);
 
-  var createButton = $('<button>'+request+'</button>');
+  var createButton = $('<button></button>').attr("value", request);
   console.log(createButton);
 
   $("#buttons-go-here").append(createButton);
