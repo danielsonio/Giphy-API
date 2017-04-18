@@ -3,7 +3,7 @@ var giphies = ["unicorns", "fairies", "rainbows", "kittens", "falkor"];
 
 
 function getGiphy() {
-
+  $("#gifs-appear-here").empty();
   var giphy = $(this).attr("data-name");
 
   var queryURL = "https://api.giphy.com/v1/gifs/search?q=" +
@@ -15,24 +15,29 @@ function getGiphy() {
       method: "GET"
     })
     .done(function(response) {
-      var giphyDiv = $("<div class='gifs'>");
-      var results = response.data;
-      console.log(results);
+      var giphyDiv = $("<div>");
 
-      var rating = response.data[0].rating;
+    for(var i = 0; i < response.data.length; i++){
+          var rating = response.data[i].rating;
 
-      var p = $("<p>").text("Rating: " + rating);
+          var p = $("<p>").text("Rating: " + rating);
+          giphyDiv.append(p);
+          var giphyImage = $("<img>");
+          giphyImage.attr("src", response.data[i].images.fixed_height_still.url);
+          giphyImage.attr("data-still", response.data[i].images.fixed_height_still.url);
+          giphyImage.attr("data-animate", response.data[i].images.fixed_height.url);
+          giphyImage.attr("data-state", "still");
+          giphyImage.attr("class", "giffers col-sm-2");
+          giphyDiv.append(giphyImage);
 
-      giphyDiv.append(p);
-      var giphyImage = $("<img>");
-      giphyImage.attr("src", response.data[0].images.fixed_height.url);
-      giphyDiv.append(giphyImage);
-
-      $("#gifs-appear-here").append(giphyDiv);
-
+          $("#gifs-appear-here").prepend(giphyDiv);
+    }
 
     });
 }
+// <img src="http://media1.giphy.com/media/3o85xkQpyMlnBkpB9C/200_s.gif" data-still="http://media1.giphy.com/media/3o85xkQpyMlnBkpB9C/200_s.gif" data-animate="http://media1.giphy.com/media/3o85xkQpyMlnBkpB9C/200.gif" data-state="still" class="gif">
+
+
 
 
 function renderButtons() {
@@ -62,19 +67,18 @@ $(document).on("click", ".gifs", getGiphy);
 renderButtons();
 
 
-// var results = response.data;
-// console.log(results);
-// for (var i = 0; i < results.length; i++) {
-//   var gifDiv = $("<div class='item'>");
-//
-//   var rating = results[i].rating;
-//
-//   var p = $("<p>").text("Rating: " + rating);
-//
-//   var giphyImage = $("<img>");
-//   giphyImage.attr("src", results[i].images.fixed_height.url);
-//
-//   gifDiv.prepend(p);
-//   gifDiv.prepend(giphyImage);
-//
-//   $("#gifs-appear-here").prepend(gifDiv);
+$(document).on("click", ".giffers", function() {
+  console.log("yaaaaaaaa");
+  // The attr jQuery method allows us to get or set the value of any attribute on our HTML element
+  var state = $(this).attr("data-state");
+  // If the clicked images state is still, update its src attribute to what its data-animate value is.
+  // Then, set the image's data-state to animate
+  // Else set src to the data-still value
+  if (state === "still") {
+    $(this).attr("src", $(this).attr("data-animate"));
+    $(this).attr("data-state", "animate");
+  } else {
+    $(this).attr("src", $(this).attr("data-still"));
+    $(this).attr("data-state", "still");
+  }
+});
